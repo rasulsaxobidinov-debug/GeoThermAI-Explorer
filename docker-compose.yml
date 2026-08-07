@@ -41,7 +41,7 @@ services:
       - geothermai_network
 
   pgadmin:
-    image: dpage/pgadmin4
+    image: docker.io/dpage/pgadmin4:latest
     container_name: geothermai-pgadmin
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@geothermai.ai
