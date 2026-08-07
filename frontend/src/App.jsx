@@ -7,7 +7,6 @@ function App() {
     return (
       <div>
         <h1>GeoThermAI Explorer</h1>
-
         <h2>Geothermal Analysis Module</h2>
 
         <p>
@@ -37,11 +36,7 @@ function App() {
         <br />
         <br />
 
-        <button
-          onClick={() =>
-            alert("Analysis module will be launched here.")
-          }
-        >
+        <button onClick={() => alert("Analysis module will be launched here.")}>
           Run Analysis
         </button>
 
@@ -49,7 +44,7 @@ function App() {
         <br />
 
         <button onClick={() => setShowAnalysis(false)}>
-          ← Back
+          Back
         </button>
       </div>
     );
