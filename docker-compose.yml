@@ -27,7 +27,7 @@ services:
       DATABASE_URL: postgresql://geothermai:geothermai@database:5432/geothermai
 
   database:
-    image: postgis/postgis:16-3.4
+    image: docker.io/postgis/postgis:16-3.4
     container_name: geothermai-database
     environment:
       POSTGRES_DB: geothermai
