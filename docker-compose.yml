@@ -12,6 +12,9 @@ services:
       - backend
     networks:
       - geothermai_network
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
 
   backend:
     build:
