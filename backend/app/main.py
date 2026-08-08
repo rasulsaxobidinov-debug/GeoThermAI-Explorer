@@ -65,3 +65,4 @@ def analyze(data: dict):
             status_code=502,
             detail=f"AI Engine error: {str(e)}"
         )
+
