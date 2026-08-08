@@ -178,10 +178,10 @@ function MapView({ selectedRegion, analysis }) {
         minZoom={5}
         maxZoom={12}
         scrollWheelZoom={true}
-        className="geo-map"
+        className="geothermal-map"
       >
         <TileLayer
-          attribution='&copy; OpenStreetMap contributors'
+          attribution="&copy; OpenStreetMap contributors"
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 
@@ -239,8 +239,7 @@ function MapView({ selectedRegion, analysis }) {
                             <br />
                             Updated probability:{" "}
                             {Math.round(
-                              analysis.geothermal_probability *
-                                100
+                              analysis.geothermal_probability * 100
                             )}
                             %
                           </div>
@@ -309,6 +308,18 @@ function MapView({ selectedRegion, analysis }) {
         </LayersControl>
       </MapContainer>
 
+      <div className="map-overlay map-title-overlay">
+        <span className="map-overlay-kicker">
+          GEOTHERMAL INTELLIGENCE
+        </span>
+
+        <strong>GeoThermAI Explorer</strong>
+
+        <span>
+          Demonstration prospectivity map
+        </span>
+      </div>
+
       <div className="map-legend">
         <div className="legend-title">
           GeoThermAI Explorer
@@ -324,18 +335,18 @@ function MapView({ selectedRegion, analysis }) {
         </div>
 
         <div className="legend-item">
-          <span className="legend-anomaly"></span>
+          <span className="legend-anomaly" />
           Thermal anomaly
         </div>
 
         <div className="legend-item">
-          <span className="legend-fault"></span>
+          <span className="legend-fault" />
           Geological fault
         </div>
 
         {analysis && (
           <>
-            <div className="legend-divider"></div>
+            <div className="legend-divider" />
 
             <div className="legend-title">
               AI Prospectivity
@@ -360,7 +371,9 @@ function MapView({ selectedRegion, analysis }) {
           </>
         )}
 
-        <div className="legend-disclaimer">
+        <div className="legend-divider" />
+
+        <div className="legend-subtitle">
           MVP demonstration data
         </div>
       </div>
