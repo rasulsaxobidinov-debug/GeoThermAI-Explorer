@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 import urllib.request
 import json
 
@@ -6,6 +7,17 @@ app = FastAPI(
     title="GeoThermAI Explorer API",
     description="AI-powered geothermal exploration platform",
     version="1.0.0",
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 AI_ENGINE_URL = "http://ai-engine:8001/predict"
@@ -52,7 +64,9 @@ def analyze(data: dict):
 
     try:
         with urllib.request.urlopen(request, timeout=30) as response:
-            result = json.loads(response.read().decode("utf-8"))
+            result = json.loads(
+                response.read().decode("utf-8")
+            )
 
         return {
             "region": region,
@@ -65,4 +79,3 @@ def analyze(data: dict):
             status_code=502,
             detail=f"AI Engine error: {str(e)}"
         )
-
