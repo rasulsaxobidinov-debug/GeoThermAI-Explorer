@@ -1,0 +1,90 @@
+
+.map-wrapper {
+  position: relative;
+  width: 100%;
+  height: 620px;
+  margin-top: 30px;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid rgba(15, 61, 92, 0.2);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
+}
+
+.geo-map {
+  width: 100%;
+  height: 100%;
+}
+
+.geothermal-marker {
+  background: transparent;
+  border: none;
+}
+
+.geothermal-marker-inner {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #d4af37;
+  border: 3px solid #0b3c5d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.35);
+  color: #0b3c5d;
+  font-size: 19px;
+  font-weight: 800;
+}
+
+.map-legend {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 14px 18px;
+  border-radius: 12px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.18);
+  min-width: 190px;
+}
+
+.legend-title {
+  font-weight: 700;
+  color: #0b3c5d;
+  margin-bottom: 10px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 7px;
+  font-size: 13px;
+}
+
+.legend-marker {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #d4af37;
+  border: 2px solid #0b3c5d;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+.legend-anomaly {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(243, 156, 18, 0.35);
+  border: 2px solid #e67e22;
+  display: inline-block;
+}
+
+.legend-fault {
+  width: 25px;
+  height: 3px;
+  background: #c0392b;
+  display: inline-block;
+}
