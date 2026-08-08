@@ -47,7 +47,6 @@ function App() {
               alert("Please select a region first.");
               return;
             }
-
             alert(`Analysis started for ${region}.`);
           }}
         >
