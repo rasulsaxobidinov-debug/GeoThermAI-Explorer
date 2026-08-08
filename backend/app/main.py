@@ -1,9 +1,6 @@
 from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-from urllib.request import Request, urlopen
+import urllib.request
 import json
-
 
 app = FastAPI(
     title="GeoThermAI Explorer API",
@@ -11,18 +8,7 @@ app = FastAPI(
     version="1.0.0",
 )
 
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-
-class AnalysisRequest(BaseModel):
-    region: str
+AI_ENGINE_URL = "http://ai-engine:8001/predict"
 
 
 @app.get("/")
@@ -42,34 +28,36 @@ def health():
 
 
 @app.post("/analyze")
-def analyze(request: AnalysisRequest):
-    if not request.region:
+def analyze(data: dict):
+    region = data.get("region")
+
+    if not region:
         raise HTTPException(
             status_code=400,
             detail="Region is required"
         )
 
     payload = json.dumps({
-        "region": request.region
+        "region": region
     }).encode("utf-8")
 
-    try:
-        ai_request = Request(
-            "http://ai-engine:8001/predict",
-            data=payload,
-            headers={
-                "Content-Type": "application/json"
-            },
-            method="POST",
-        )
+    request = urllib.request.Request(
+        AI_ENGINE_URL,
+        data=payload,
+        headers={
+            "Content-Type": "application/json"
+        },
+        method="POST",
+    )
 
-        with urlopen(ai_request, timeout=30) as response:
+    try:
+        with urllib.request.urlopen(request, timeout=30) as response:
             result = json.loads(response.read().decode("utf-8"))
 
         return {
+            "region": region,
             "status": "success",
-            "region": request.region,
-            "analysis": result,
+            "analysis": result
         }
 
     except Exception as e:
