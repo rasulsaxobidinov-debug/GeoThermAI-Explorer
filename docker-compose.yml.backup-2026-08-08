@@ -1,9 +1,10 @@
+version: "3.9"
+
 services:
 
   frontend:
     build:
       context: ./frontend
-    image: localhost/geothermai-frontend:competition-v1
     container_name: geothermai-frontend-production
     ports:
       - "8080:80"
@@ -15,17 +16,16 @@ services:
   backend:
     build:
       context: ./backend
-    image: localhost/geothermalexplorer_backend:latest
     container_name: geothermai-backend
     ports:
       - "8000:8000"
     depends_on:
       - database
       - ai-engine
-    environment:
-      DATABASE_URL: postgresql://geothermai:geothermai@database:5432/geothermai
     networks:
       - geothermai_network
+    environment:
+      DATABASE_URL: postgresql://geothermai:geothermai@database:5432/geothermai
 
   database:
     image: docker.io/postgis/postgis:16-3.4
@@ -57,7 +57,6 @@ services:
   ai-engine:
     build:
       context: ./ai-engine
-    image: localhost/geothermalexplorer_ai-engine:latest
     container_name: geothermai-ai-engine
     ports:
       - "8001:8001"
@@ -69,5 +68,4 @@ volumes:
 
 networks:
   geothermai_network:
-    name: geothermai_network
     driver: bridge

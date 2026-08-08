@@ -1,9 +1,6 @@
 import { useState } from "react";
 import MapView from "./components/MapView";
 
-const API_URL =
-  import.meta.env.VITE_API_URL || "/api";
-
 const regions = [
   "Tashkent",
   "Samarkand",
@@ -30,16 +27,6 @@ const getRiskClass = (risk) => {
   return String(risk || "").toLowerCase();
 };
 
-const formatScore = (value) => {
-  const number = Number(value);
-
-  if (!Number.isFinite(number)) {
-    return "—";
-  }
-
-  return number.toFixed(2);
-};
-
 function App() {
   const [showAnalysis, setShowAnalysis] = useState(false);
   const [region, setRegion] = useState("");
@@ -49,7 +36,7 @@ function App() {
 
   const runAnalysis = async () => {
     if (!region) {
-      setError("Please select a study region first.");
+      setError("Please select a region first.");
       return;
     }
 
@@ -58,7 +45,7 @@ function App() {
     setAnalysis(null);
 
     try {
-      const response = await fetch(`${API_URL}/analyze`, {
+      const response = await fetch("http://localhost:8000/analyze", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -67,19 +54,7 @@ function App() {
       });
 
       if (!response.ok) {
-        let message = `Backend returned ${response.status}`;
-
-        try {
-          const errorData = await response.json();
-
-          if (errorData?.detail) {
-            message = errorData.detail;
-          }
-        } catch {
-          // Keep default error message.
-        }
-
-        throw new Error(message);
+        throw new Error(`Backend returned ${response.status}`);
       }
 
       const data = await response.json();
@@ -90,7 +65,7 @@ function App() {
 
       setAnalysis(data.analysis);
     } catch (err) {
-      setError(`Unable to complete analysis: ${err.message}`);
+      setError(`Analysis Error: ${err.message}`);
     } finally {
       setLoading(false);
     }
@@ -102,174 +77,58 @@ function App() {
     setError("");
   };
 
-  const openAnalysis = () => {
-    setShowAnalysis(true);
-    setError("");
-  };
-
   if (!showAnalysis) {
     return (
       <main className="landing-page">
-        <div className="landing-background-grid" />
-
-        <header className="landing-header">
-          <div className="brand">
-            <div className="brand-mark">
-              GT
-            </div>
-
-            <div>
-              <div className="brand-name">
-                GeoThermAI Explorer
-              </div>
-
-              <div className="brand-tagline">
-                Intelligent geothermal exploration
-              </div>
-            </div>
+        <section className="hero-card">
+          <div className="hero-badge">
+            AI • GEOTHERMAL EXPLORATION
           </div>
 
-          <div className="header-status">
-            <span className="status-dot" />
-            AI Exploration Platform
-          </div>
-        </header>
+          <h1>GeoThermAI Explorer</h1>
 
-        <section className="hero-section">
-          <div className="hero-content">
-            <div className="eyebrow">
-              AI • GEOTHERMAL EXPLORATION
-            </div>
+          <p>
+            AI-powered geothermal exploration platform
+          </p>
 
-            <h1>
-              Discover geothermal
-              <span> potential with AI.</span>
-            </h1>
+          <p className="hero-description">
+            Intelligent analysis of geothermal potential using
+            geological, geophysical and thermal information.
+          </p>
 
-            <p className="hero-description">
-              GeoThermAI Explorer integrates geological,
-              geophysical and thermal information to support
-              intelligent geothermal resource assessment.
-            </p>
-
-            <div className="hero-actions">
-              <button
-                className="primary-button hero-button"
-                onClick={openAnalysis}
-              >
-                Start Analysis
-                <span className="button-arrow">→</span>
-              </button>
-
-              <div className="hero-note">
-                <span>13</span>
-                study regions available
-              </div>
-            </div>
-          </div>
-
-          <div className="hero-visual">
-            <div className="orbital-ring ring-one" />
-            <div className="orbital-ring ring-two" />
-            <div className="orbital-ring ring-three" />
-
-            <div className="earth-core">
-              <div className="core-glow" />
-              <div className="core-label">
-                <strong>AI</strong>
-                <span>GEOTHERMAL</span>
-              </div>
-            </div>
-
-            <div className="floating-card card-top">
-              <span className="floating-label">
-                PROSPECTIVITY
-              </span>
-              <strong>AI</strong>
-            </div>
-
-            <div className="floating-card card-bottom">
-              <span className="floating-label">
-                EXPLORATION
-              </span>
-              <strong>INTELLIGENCE</strong>
-            </div>
-          </div>
+          <button
+            className="primary-button hero-button"
+            onClick={() => setShowAnalysis(true)}
+          >
+            Start Analysis
+          </button>
         </section>
-
-        <section className="feature-strip">
-          <div className="feature-item">
-            <div className="feature-icon">01</div>
-            <div>
-              <strong>Regional Analysis</strong>
-              <span>Explore geothermal potential</span>
-            </div>
-          </div>
-
-          <div className="feature-item">
-            <div className="feature-icon">02</div>
-            <div>
-              <strong>AI Assessment</strong>
-              <span>Probability & prospectivity scoring</span>
-            </div>
-          </div>
-
-          <div className="feature-item">
-            <div className="feature-icon">03</div>
-            <div>
-              <strong>Spatial Intelligence</strong>
-              <span>Map-based exploration insights</span>
-            </div>
-          </div>
-        </section>
-
-        <footer className="landing-footer">
-          <span>GeoThermAI Explorer</span>
-          <span>Competition MVP • Version 1.0</span>
-        </footer>
       </main>
     );
   }
 
-  const prospectivityLevel = analysis
-    ? getProspectivityLevel(analysis.prospectivity_index)
-    : null;
-
   return (
-    <main className="app-shell">
-      <header className="app-header">
-        <div className="brand">
-          <div className="brand-mark">
-            GT
+    <main className="analysis-page">
+      <header className="top-header">
+        <div>
+          <div className="brand-title">
+            GeoThermAI Explorer
           </div>
 
-          <div>
-            <div className="brand-name">
-              GeoThermAI Explorer
-            </div>
-
-            <div className="brand-tagline">
-              AI-powered geothermal exploration
-            </div>
+          <div className="brand-subtitle">
+            AI-powered geothermal exploration
           </div>
         </div>
 
-        <div className="header-actions">
-          <div className="header-status">
-            <span className="status-dot" />
-            System ready
-          </div>
-
-          <button
-            className="secondary-button"
-            onClick={() => {
-              setShowAnalysis(false);
-              resetAnalysis();
-            }}
-          >
-            ← Back
-          </button>
-        </div>
+        <button
+          className="secondary-button"
+          onClick={() => {
+            setShowAnalysis(false);
+            resetAnalysis();
+          }}
+        >
+          ← Back
+        </button>
       </header>
 
       <section className="analysis-header">
@@ -283,17 +142,9 @@ function App() {
           </h1>
 
           <p>
-            Select a study region and run an AI-assisted
-            geothermal prospectivity assessment.
+            Select a region and run an AI-powered geothermal
+            prospectivity analysis.
           </p>
-        </div>
-
-        <div className="analysis-status-card">
-          <span className="status-dot" />
-          <div>
-            <small>ENGINE STATUS</small>
-            <strong>READY</strong>
-          </div>
         </div>
       </section>
 
@@ -311,7 +162,6 @@ function App() {
               setAnalysis(null);
               setError("");
             }}
-            disabled={loading}
           >
             <option value="">
               Choose region
@@ -328,18 +178,15 @@ function App() {
         <button
           className="primary-button analyze-button"
           onClick={runAnalysis}
-          disabled={loading || !region}
+          disabled={loading}
         >
           {loading ? (
             <>
-              <span className="loading-spinner" />
+              <span className="loading-spinner"></span>
               Running Analysis...
             </>
           ) : (
-            <>
-              Run AI Analysis
-              <span className="button-arrow">→</span>
-            </>
+            "Run Analysis"
           )}
         </button>
 
@@ -355,18 +202,14 @@ function App() {
 
       {error && (
         <div className="error-box">
-          <div className="error-icon">!</div>
-
-          <div>
-            <strong>Analysis Error</strong>
-            <span>{error}</span>
-          </div>
+          <strong>Analysis Error</strong>
+          <span>{error}</span>
         </div>
       )}
 
       {loading && (
         <div className="loading-box">
-          <div className="loading-spinner large" />
+          <div className="loading-spinner large"></div>
 
           <div>
             <strong>
@@ -375,7 +218,7 @@ function App() {
 
             <span>
               Processing geothermal prospectivity for{" "}
-              <strong>{region}</strong>
+              {region}...
             </span>
           </div>
         </div>
@@ -391,17 +234,11 @@ function App() {
             <h2>
               Geothermal Prospectivity Map
             </h2>
-
-            <p className="section-description">
-              Spatial visualization of geothermal prospects,
-              thermal anomalies and geological structures.
-            </p>
           </div>
 
           {region && (
             <div className="selected-region">
-              <span>SELECTED REGION</span>
-              <strong>{region}</strong>
+              Selected: <strong>{region}</strong>
             </div>
           )}
         </div>
@@ -414,7 +251,7 @@ function App() {
 
       {analysis && (
         <section className="result-section">
-          <div className="section-heading result-heading">
+          <div className="section-heading">
             <div>
               <div className="section-label">
                 AI OUTPUT
@@ -425,14 +262,13 @@ function App() {
               </h2>
 
               <p className="section-description">
-                AI-assisted assessment generated for the
-                selected study region.
+                AI-assisted assessment of geothermal resource
+                potential based on the selected study region.
               </p>
             </div>
 
             <div className="completed-badge">
-              <span>✓</span>
-              Analysis completed
+              ✓ Analysis completed
             </div>
           </div>
 
@@ -443,15 +279,13 @@ function App() {
               </div>
 
               <div className="prospectivity-value">
-                {formatScore(
-                  analysis.prospectivity_index
-                )}
+                {analysis.prospectivity_index}
               </div>
 
-              <div
-                className={`prospectivity-level ${prospectivityLevel.toLowerCase()}`}
-              >
-                {prospectivityLevel}
+              <div className="prospectivity-level">
+                {getProspectivityLevel(
+                  analysis.prospectivity_index
+                )}
               </div>
 
               <div className="prospectivity-bar">
@@ -459,9 +293,7 @@ function App() {
                   className="prospectivity-fill"
                   style={{
                     width: `${Math.min(
-                      Number(
-                        analysis.prospectivity_index
-                      ) * 100,
+                      analysis.prospectivity_index * 100,
                       100
                     )}%`,
                   }}
@@ -481,9 +313,7 @@ function App() {
 
                 <strong>
                   {Math.round(
-                    Number(
-                      analysis.geothermal_probability
-                    ) * 100
+                    analysis.geothermal_probability * 100
                   )}
                   %
                 </strong>
@@ -554,20 +384,21 @@ function App() {
               </div>
 
               <h3>
-                {prospectivityLevel === "HIGH"
+                {getProspectivityLevel(
+                  analysis.prospectivity_index
+                ) === "HIGH"
                   ? "High-priority geothermal exploration area"
-                  : prospectivityLevel === "MODERATE"
+                  : getProspectivityLevel(
+                      analysis.prospectivity_index
+                    ) === "MODERATE"
                   ? "Moderate-priority exploration area"
                   : "Low-priority exploration area"}
               </h3>
 
               <p>
-                <strong>{region}</strong> demonstrates a
-                prospectivity index of{" "}
+                {region} demonstrates a prospectivity index of{" "}
                 <strong>
-                  {formatScore(
-                    analysis.prospectivity_index
-                  )}
+                  {analysis.prospectivity_index}
                 </strong>{" "}
                 with an estimated temperature of{" "}
                 <strong>
@@ -582,11 +413,14 @@ function App() {
           </div>
 
           <div className="analysis-disclaimer">
-            <strong>Competition MVP output:</strong>{" "}
+            <strong>
+              Demo / MVP output:
+            </strong>{" "}
             This assessment demonstrates the GeoThermAI Explorer
-            analytical workflow. Values shown are demonstration
-            results and should not be interpreted as confirmed
-            geological exploration targets.
+            analytical workflow. Values shown in the competition
+            MVP are demonstration results and should not be
+            interpreted as confirmed geological exploration
+            targets.
           </div>
         </section>
       )}
@@ -596,7 +430,6 @@ function App() {
         <span>
           AI-powered geothermal exploration platform
         </span>
-        <span>Competition MVP • v1.0</span>
       </footer>
     </main>
   );
