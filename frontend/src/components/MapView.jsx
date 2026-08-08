@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import {
   MapContainer,
   TileLayer,
@@ -25,6 +24,7 @@ const geothermalPoints = [
     temperature: 92,
     depth: 1850,
     probability: 78,
+    prospectivity: 0.81,
   },
   {
     name: "Samarkand Geothermal Zone",
@@ -33,6 +33,7 @@ const geothermalPoints = [
     temperature: 86,
     depth: 2100,
     probability: 72,
+    prospectivity: 0.74,
   },
   {
     name: "Bukhara Geothermal Zone",
@@ -41,6 +42,7 @@ const geothermalPoints = [
     temperature: 101,
     depth: 2400,
     probability: 81,
+    prospectivity: 0.84,
   },
   {
     name: "Navoi Geothermal Zone",
@@ -49,6 +51,7 @@ const geothermalPoints = [
     temperature: 96,
     depth: 2250,
     probability: 76,
+    prospectivity: 0.78,
   },
   {
     name: "Jizzakh Geothermal Zone",
@@ -57,6 +60,7 @@ const geothermalPoints = [
     temperature: 89,
     depth: 1950,
     probability: 74,
+    prospectivity: 0.76,
   },
   {
     name: "Surkhandarya Geothermal Zone",
@@ -65,6 +69,7 @@ const geothermalPoints = [
     temperature: 108,
     depth: 2600,
     probability: 85,
+    prospectivity: 0.88,
   },
   {
     name: "Kashkadarya Geothermal Zone",
@@ -73,6 +78,7 @@ const geothermalPoints = [
     temperature: 104,
     depth: 2450,
     probability: 83,
+    prospectivity: 0.86,
   },
   {
     name: "Fergana Geothermal Zone",
@@ -81,6 +87,7 @@ const geothermalPoints = [
     temperature: 91,
     depth: 1800,
     probability: 79,
+    prospectivity: 0.82,
   },
 ];
 
@@ -115,12 +122,18 @@ const faultLines = [
   ],
 ];
 
+function getProspectivityClass(value) {
+  if (value >= 0.8) return "high";
+  if (value >= 0.65) return "moderate";
+  return "low";
+}
+
 function createProspectMarker(selected = false) {
   return L.divIcon({
     className: "geothermal-marker",
     html: `
       <div class="geothermal-marker-inner ${
-        selected ? "selected" : ""
+        selected ? "selected-marker" : ""
       }">
         <span>△</span>
       </div>
@@ -130,19 +143,14 @@ function createProspectMarker(selected = false) {
   });
 }
 
-function MapController({ selectedPoint }) {
+function MapFocus({ selectedPoint }) {
   const map = useMap();
 
-  useEffect(() => {
-    if (!selectedPoint) {
-      map.setView(uzbekistanCenter, 6);
-      return;
-    }
-
+  if (selectedPoint) {
     map.flyTo(selectedPoint.position, 8, {
       duration: 1.2,
     });
-  }, [selectedPoint, map]);
+  }
 
   return null;
 }
@@ -151,6 +159,16 @@ function MapView({ selectedRegion, analysis }) {
   const selectedPoint = geothermalPoints.find(
     (point) => point.region === selectedRegion
   );
+
+  const selectedProspectivity =
+    analysis?.prospectivity_index ??
+    selectedPoint?.prospectivity ??
+    null;
+
+  const prospectivityClass =
+    selectedProspectivity !== null
+      ? getProspectivityClass(selectedProspectivity)
+      : null;
 
   return (
     <div className="map-wrapper">
@@ -162,12 +180,14 @@ function MapView({ selectedRegion, analysis }) {
         scrollWheelZoom={true}
         className="geo-map"
       >
-        <MapController selectedPoint={selectedPoint} />
-
         <TileLayer
           attribution='&copy; OpenStreetMap contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
+
+        {selectedPoint && (
+          <MapFocus selectedPoint={selectedPoint} />
+        )}
 
         <LayersControl position="topright">
           <Overlay checked name="Geothermal Prospects">
@@ -183,15 +203,49 @@ function MapView({ selectedRegion, analysis }) {
                     icon={createProspectMarker(isSelected)}
                   >
                     <Popup>
-                      <strong>{point.name}</strong>
-                      <br />
-                      Region: {point.region}
-                      <br />
-                      Temperature: {point.temperature} °C
-                      <br />
-                      Depth: {point.depth} m
-                      <br />
-                      Probability: {point.probability}%
+                      <div className="map-popup">
+                        <h3>{point.name}</h3>
+
+                        <p>
+                          <strong>Region:</strong>{" "}
+                          {point.region}
+                        </p>
+
+                        <p>
+                          <strong>Temperature:</strong>{" "}
+                          {point.temperature} °C
+                        </p>
+
+                        <p>
+                          <strong>Depth:</strong>{" "}
+                          {point.depth} m
+                        </p>
+
+                        <p>
+                          <strong>Probability:</strong>{" "}
+                          {point.probability}%
+                        </p>
+
+                        <p>
+                          <strong>Prospectivity:</strong>{" "}
+                          {point.prospectivity.toFixed(2)}
+                        </p>
+
+                        {isSelected && analysis && (
+                          <div className="popup-ai-result">
+                            <strong>
+                              ✓ AI analysis result
+                            </strong>
+                            <br />
+                            Updated probability:{" "}
+                            {Math.round(
+                              analysis.geothermal_probability *
+                                100
+                            )}
+                            %
+                          </div>
+                        )}
+                      </div>
                     </Popup>
                   </Marker>
                 );
@@ -232,41 +286,36 @@ function MapView({ selectedRegion, analysis }) {
               ))}
             </>
           </Overlay>
-        </LayersControl>
 
-        {selectedPoint && analysis && (
-          <Marker
-            position={selectedPoint.position}
-            icon={createProspectMarker(true)}
-          >
-            <Popup>
-              <strong>AI Analysis Result</strong>
-              <br />
-              Region: {selectedRegion}
-              <br />
-              Geothermal Probability:{" "}
-              {Math.round(
-                (analysis.geothermal_probability ?? 0) * 100
-              )}
-              %
-              <br />
-              Temperature: {analysis.temperature_forecast} °C
-              <br />
-              Depth: {analysis.depth_forecast} m
-              <br />
-              Risk:{" "}
-              {String(analysis.risk_level).toUpperCase()}
-              <br />
-              Prospectivity Index:{" "}
-              {analysis.prospectivity_index}
-            </Popup>
-          </Marker>
-        )}
+          {selectedPoint && analysis && (
+            <Overlay checked name="AI Analysis Result">
+              <Circle
+                center={selectedPoint.position}
+                radius={60000}
+                pathOptions={{
+                  color:
+                    prospectivityClass === "high"
+                      ? "#168a4a"
+                      : prospectivityClass === "moderate"
+                      ? "#d4af37"
+                      : "#c0392b",
+                  fillOpacity: 0.08,
+                  weight: 4,
+                  dashArray: "8 8",
+                }}
+              />
+            </Overlay>
+          )}
+        </LayersControl>
       </MapContainer>
 
       <div className="map-legend">
         <div className="legend-title">
           GeoThermAI Explorer
+        </div>
+
+        <div className="legend-subtitle">
+          Demonstration prospectivity map
         </div>
 
         <div className="legend-item">
@@ -282,6 +331,37 @@ function MapView({ selectedRegion, analysis }) {
         <div className="legend-item">
           <span className="legend-fault"></span>
           Geological fault
+        </div>
+
+        {analysis && (
+          <>
+            <div className="legend-divider"></div>
+
+            <div className="legend-title">
+              AI Prospectivity
+            </div>
+
+            <div
+              className={`prospectivity-badge ${prospectivityClass}`}
+            >
+              {prospectivityClass === "high"
+                ? "HIGH"
+                : prospectivityClass === "moderate"
+                ? "MODERATE"
+                : "LOW"}
+            </div>
+
+            <div className="legend-score">
+              Score:{" "}
+              <strong>
+                {Number(selectedProspectivity).toFixed(2)}
+              </strong>
+            </div>
+          </>
+        )}
+
+        <div className="legend-disclaimer">
+          MVP demonstration data
         </div>
       </div>
     </div>
