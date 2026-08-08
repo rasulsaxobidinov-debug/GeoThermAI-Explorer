@@ -3,6 +3,44 @@ import { useState } from "react";
 function App() {
   const [showAnalysis, setShowAnalysis] = useState(false);
   const [region, setRegion] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState(null);
+  const [error, setError] = useState("");
+
+  const runAnalysis = async () => {
+    if (!region) {
+      setError("Please select a region first.");
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+    setResult(null);
+
+    try {
+      const response = await fetch("http://localhost:8000/analyze", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          region: region,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.detail || "Analysis failed.");
+      }
+
+      setResult(data);
+    } catch (err) {
+      setError(err.message || "Unable to connect to backend.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (showAnalysis) {
     return (
@@ -19,7 +57,11 @@ function App() {
           Region:{" "}
           <select
             value={region}
-            onChange={(e) => setRegion(e.target.value)}
+            onChange={(e) => {
+              setRegion(e.target.value);
+              setResult(null);
+              setError("");
+            }}
           >
             <option value="">Choose region</option>
             <option value="Tashkent">Tashkent</option>
@@ -41,22 +83,65 @@ function App() {
         <br />
         <br />
 
-        <button
-          onClick={() => {
-            if (!region) {
-              alert("Please select a region first.");
-              return;
-            }
-            alert(`Analysis started for ${region}.`);
-          }}
-        >
-          Run Analysis
+        <button onClick={runAnalysis} disabled={loading}>
+          {loading ? "Analyzing..." : "Run Analysis"}
         </button>
 
-        <br />
+        {error && (
+          <div>
+            <h3>Analysis Error</h3>
+            <p>{error}</p>
+          </div>
+        )}
+
+        {result && result.analysis && (
+          <div>
+            <h2>Geothermal Analysis Result</h2>
+
+            <p>
+              <strong>Region:</strong> {result.region}
+            </p>
+
+            <p>
+              <strong>Geothermal Probability:</strong>{" "}
+              {(result.analysis.geothermal_probability * 100).toFixed(0)}%
+            </p>
+
+            <p>
+              <strong>Temperature Forecast:</strong>{" "}
+              {result.analysis.temperature_forecast} °C
+            </p>
+
+            <p>
+              <strong>Depth Forecast:</strong>{" "}
+              {result.analysis.depth_forecast} m
+            </p>
+
+            <p>
+              <strong>Risk Level:</strong>{" "}
+              {result.analysis.risk_level.toUpperCase()}
+            </p>
+
+            <p>
+              <strong>Prospectivity Index:</strong>{" "}
+              {result.analysis.prospectivity_index}
+            </p>
+
+            <p>
+              <strong>Status:</strong> Analysis completed
+            </p>
+          </div>
+        )}
+
         <br />
 
-        <button onClick={() => setShowAnalysis(false)}>
+        <button
+          onClick={() => {
+            setShowAnalysis(false);
+            setResult(null);
+            setError("");
+          }}
+        >
           ← Back
         </button>
       </div>
