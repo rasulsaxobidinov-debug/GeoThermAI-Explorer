@@ -2,6 +2,7 @@ import { useState } from "react";
 
 function App() {
   const [showAnalysis, setShowAnalysis] = useState(false);
+  const [region, setRegion] = useState("");
 
   if (showAnalysis) {
     return (
@@ -16,21 +17,24 @@ function App() {
 
         <label>
           Region:{" "}
-          <select>
+          <select
+            value={region}
+            onChange={(e) => setRegion(e.target.value)}
+          >
             <option value="">Choose region</option>
-            <option>Tashkent</option>
-            <option>Samarkand</option>
-            <option>Bukhara</option>
-            <option>Navoi</option>
-            <option>Jizzakh</option>
-            <option>Surkhandarya</option>
-            <option>Kashkadarya</option>
-            <option>Fergana</option>
-            <option>Andijan</option>
-            <option>Namangan</option>
-            <option>Syrdarya</option>
-            <option>Khorezm</option>
-            <option>Karakalpakstan</option>
+            <option value="Tashkent">Tashkent</option>
+            <option value="Samarkand">Samarkand</option>
+            <option value="Bukhara">Bukhara</option>
+            <option value="Navoi">Navoi</option>
+            <option value="Jizzakh">Jizzakh</option>
+            <option value="Surkhandarya">Surkhandarya</option>
+            <option value="Kashkadarya">Kashkadarya</option>
+            <option value="Fergana">Fergana</option>
+            <option value="Andijan">Andijan</option>
+            <option value="Namangan">Namangan</option>
+            <option value="Syrdarya">Syrdarya</option>
+            <option value="Khorezm">Khorezm</option>
+            <option value="Karakalpakstan">Karakalpakstan</option>
           </select>
         </label>
 
@@ -38,9 +42,14 @@ function App() {
         <br />
 
         <button
-          onClick={() =>
-            alert("Analysis module will be launched here.")
-          }
+          onClick={() => {
+            if (!region) {
+              alert("Please select a region first.");
+              return;
+            }
+
+            alert(`Analysis started for ${region}.`);
+          }}
         >
           Run Analysis
         </button>
