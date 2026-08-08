@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import {
   MapContainer,
   TileLayer,
@@ -6,17 +7,16 @@ import {
   Polyline,
   Circle,
   LayersControl,
+  useMap,
 } from "react-leaflet";
 
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 
-const { BaseLayer, Overlay } = LayersControl;
+const { Overlay } = LayersControl;
 
 const uzbekistanCenter = [41.3775, 64.5853];
 
-// Demo geothermal prospectivity points.
-// These are MVP demonstration points, not measured exploration targets.
 const geothermalPoints = [
   {
     name: "Tashkent Geothermal Zone",
@@ -84,7 +84,6 @@ const geothermalPoints = [
   },
 ];
 
-// Demonstration thermal anomalies.
 const thermalAnomalies = [
   [41.31, 69.28],
   [39.65, 66.96],
@@ -94,7 +93,6 @@ const thermalAnomalies = [
   [40.39, 71.78],
 ];
 
-// Demonstration geological fault traces.
 const faultLines = [
   [
     [42.0, 68.0],
@@ -117,17 +115,36 @@ const faultLines = [
   ],
 ];
 
-function createProspectMarker() {
+function createProspectMarker(selected = false) {
   return L.divIcon({
     className: "geothermal-marker",
     html: `
-      <div class="geothermal-marker-inner">
+      <div class="geothermal-marker-inner ${
+        selected ? "selected" : ""
+      }">
         <span>△</span>
       </div>
     `,
-    iconSize: [34, 34],
-    iconAnchor: [17, 17],
+    iconSize: selected ? [42, 42] : [34, 34],
+    iconAnchor: selected ? [21, 21] : [17, 17],
   });
+}
+
+function MapController({ selectedPoint }) {
+  const map = useMap();
+
+  useEffect(() => {
+    if (!selectedPoint) {
+      map.setView(uzbekistanCenter, 6);
+      return;
+    }
+
+    map.flyTo(selectedPoint.position, 8, {
+      duration: 1.2,
+    });
+  }, [selectedPoint, map]);
+
+  return null;
 }
 
 function MapView({ selectedRegion, analysis }) {
@@ -139,39 +156,46 @@ function MapView({ selectedRegion, analysis }) {
     <div className="map-wrapper">
       <MapContainer
         center={uzbekistanCenter}
-        zoom={5.5}
+        zoom={6}
+        minZoom={5}
+        maxZoom={12}
         scrollWheelZoom={true}
         className="geo-map"
       >
-        <LayersControl position="topright">
-          <BaseLayer checked name="OpenStreetMap">
-            <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-          </BaseLayer>
+        <MapController selectedPoint={selectedPoint} />
 
+        <TileLayer
+          attribution='&copy; OpenStreetMap contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+
+        <LayersControl position="topright">
           <Overlay checked name="Geothermal Prospects">
             <>
-              {geothermalPoints.map((point) => (
-                <Marker
-                  key={point.name}
-                  position={point.position}
-                  icon={createProspectMarker()}
-                >
-                  <Popup>
-                    <strong>{point.name}</strong>
-                    <br />
-                    Region: {point.region}
-                    <br />
-                    Temperature: {point.temperature} °C
-                    <br />
-                    Depth: {point.depth} m
-                    <br />
-                    Probability: {point.probability}%
-                  </Popup>
-                </Marker>
-              ))}
+              {geothermalPoints.map((point) => {
+                const isSelected =
+                  point.region === selectedRegion;
+
+                return (
+                  <Marker
+                    key={point.name}
+                    position={point.position}
+                    icon={createProspectMarker(isSelected)}
+                  >
+                    <Popup>
+                      <strong>{point.name}</strong>
+                      <br />
+                      Region: {point.region}
+                      <br />
+                      Temperature: {point.temperature} °C
+                      <br />
+                      Depth: {point.depth} m
+                      <br />
+                      Probability: {point.probability}%
+                    </Popup>
+                  </Marker>
+                );
+              })}
             </>
           </Overlay>
 
@@ -213,7 +237,7 @@ function MapView({ selectedRegion, analysis }) {
         {selectedPoint && analysis && (
           <Marker
             position={selectedPoint.position}
-            icon={createProspectMarker()}
+            icon={createProspectMarker(true)}
           >
             <Popup>
               <strong>AI Analysis Result</strong>
@@ -230,16 +254,20 @@ function MapView({ selectedRegion, analysis }) {
               <br />
               Depth: {analysis.depth_forecast} m
               <br />
-              Risk: {String(analysis.risk_level).toUpperCase()}
+              Risk:{" "}
+              {String(analysis.risk_level).toUpperCase()}
               <br />
-              Prospectivity Index: {analysis.prospectivity_index}
+              Prospectivity Index:{" "}
+              {analysis.prospectivity_index}
             </Popup>
           </Marker>
         )}
       </MapContainer>
 
       <div className="map-legend">
-        <div className="legend-title">GeoThermAI Explorer</div>
+        <div className="legend-title">
+          GeoThermAI Explorer
+        </div>
 
         <div className="legend-item">
           <span className="legend-marker">△</span>
