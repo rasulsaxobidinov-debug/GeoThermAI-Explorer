@@ -17,6 +17,16 @@ const regions = [
   "Karakalpakstan",
 ];
 
+const getProspectivityLevel = (value) => {
+  if (value >= 0.8) return "HIGH";
+  if (value >= 0.6) return "MODERATE";
+  return "LOW";
+};
+
+const getRiskClass = (risk) => {
+  return String(risk || "").toLowerCase();
+};
+
 function App() {
   const [showAnalysis, setShowAnalysis] = useState(false);
   const [region, setRegion] = useState("");
@@ -71,7 +81,9 @@ function App() {
     return (
       <main className="landing-page">
         <section className="hero-card">
-          <div className="hero-badge">AI • GEOTHERMAL EXPLORATION</div>
+          <div className="hero-badge">
+            AI • GEOTHERMAL EXPLORATION
+          </div>
 
           <h1>GeoThermAI Explorer</h1>
 
@@ -99,7 +111,10 @@ function App() {
     <main className="analysis-page">
       <header className="top-header">
         <div>
-          <div className="brand-title">GeoThermAI Explorer</div>
+          <div className="brand-title">
+            GeoThermAI Explorer
+          </div>
+
           <div className="brand-subtitle">
             AI-powered geothermal exploration
           </div>
@@ -118,8 +133,14 @@ function App() {
 
       <section className="analysis-header">
         <div>
-          <div className="section-label">ANALYSIS MODULE</div>
-          <h1>Geothermal Resource Assessment</h1>
+          <div className="section-label">
+            ANALYSIS MODULE
+          </div>
+
+          <h1>
+            Geothermal Resource Assessment
+          </h1>
+
           <p>
             Select a region and run an AI-powered geothermal
             prospectivity analysis.
@@ -129,7 +150,9 @@ function App() {
 
       <section className="control-panel">
         <div className="control-field">
-          <label htmlFor="region">Study Region</label>
+          <label htmlFor="region">
+            Study Region
+          </label>
 
           <select
             id="region"
@@ -140,7 +163,9 @@ function App() {
               setError("");
             }}
           >
-            <option value="">Choose region</option>
+            <option value="">
+              Choose region
+            </option>
 
             {regions.map((item) => (
               <option key={item} value={item}>
@@ -185,10 +210,15 @@ function App() {
       {loading && (
         <div className="loading-box">
           <div className="loading-spinner large"></div>
+
           <div>
-            <strong>AI analysis in progress</strong>
+            <strong>
+              AI analysis in progress
+            </strong>
+
             <span>
-              Processing geothermal prospectivity for {region}...
+              Processing geothermal prospectivity for{" "}
+              {region}...
             </span>
           </div>
         </div>
@@ -197,8 +227,13 @@ function App() {
       <section className="map-section">
         <div className="section-heading">
           <div>
-            <div className="section-label">SPATIAL ANALYSIS</div>
-            <h2>Geothermal Prospectivity Map</h2>
+            <div className="section-label">
+              SPATIAL ANALYSIS
+            </div>
+
+            <h2>
+              Geothermal Prospectivity Map
+            </h2>
           </div>
 
           {region && (
@@ -218,8 +253,18 @@ function App() {
         <section className="result-section">
           <div className="section-heading">
             <div>
-              <div className="section-label">AI OUTPUT</div>
-              <h2>Geothermal Analysis Result</h2>
+              <div className="section-label">
+                AI OUTPUT
+              </div>
+
+              <h2>
+                Geothermal Analysis Result
+              </h2>
+
+              <p className="section-description">
+                AI-assisted assessment of geothermal resource
+                potential based on the selected study region.
+              </p>
             </div>
 
             <div className="completed-badge">
@@ -227,62 +272,164 @@ function App() {
             </div>
           </div>
 
-          <div className="result-grid">
-            <div className="result-card highlight">
-              <span>Geothermal Probability</span>
-              <strong>
-                {Math.round(
-                  analysis.geothermal_probability * 100
-                )}
-                %
-              </strong>
-              <small>Resource presence probability</small>
-            </div>
+          <div className="ai-dashboard">
+            <div className="prospectivity-card">
+              <div className="dashboard-label">
+                PROSPECTIVITY INDEX
+              </div>
 
-            <div className="result-card">
-              <span>Temperature Forecast</span>
-              <strong>
-                {analysis.temperature_forecast} °C
-              </strong>
-              <small>Estimated subsurface temperature</small>
-            </div>
-
-            <div className="result-card">
-              <span>Depth Forecast</span>
-              <strong>
-                {analysis.depth_forecast} m
-              </strong>
-              <small>Estimated target depth</small>
-            </div>
-
-            <div className="result-card">
-              <span>Risk Level</span>
-              <strong className="risk-value">
-                {String(analysis.risk_level).toUpperCase()}
-              </strong>
-              <small>Exploration risk assessment</small>
-            </div>
-
-            <div className="result-card">
-              <span>Prospectivity Index</span>
-              <strong>
+              <div className="prospectivity-value">
                 {analysis.prospectivity_index}
-              </strong>
-              <small>Overall geothermal prospectivity</small>
+              </div>
+
+              <div className="prospectivity-level">
+                {getProspectivityLevel(
+                  analysis.prospectivity_index
+                )}
+              </div>
+
+              <div className="prospectivity-bar">
+                <div
+                  className="prospectivity-fill"
+                  style={{
+                    width: `${Math.min(
+                      analysis.prospectivity_index * 100,
+                      100
+                    )}%`,
+                  }}
+                />
+              </div>
+
+              <p>
+                Overall geothermal prospectivity
+              </p>
             </div>
 
-            <div className="result-card">
-              <span>Study Region</span>
-              <strong>{region}</strong>
-              <small>Current analysis area</small>
+            <div className="ai-metrics">
+              <div className="result-card highlight">
+                <span>
+                  Geothermal Probability
+                </span>
+
+                <strong>
+                  {Math.round(
+                    analysis.geothermal_probability * 100
+                  )}
+                  %
+                </strong>
+
+                <small>
+                  Estimated resource presence probability
+                </small>
+              </div>
+
+              <div className="result-card">
+                <span>
+                  Temperature Forecast
+                </span>
+
+                <strong>
+                  {analysis.temperature_forecast} °C
+                </strong>
+
+                <small>
+                  Estimated subsurface temperature
+                </small>
+              </div>
+
+              <div className="result-card">
+                <span>
+                  Depth Forecast
+                </span>
+
+                <strong>
+                  {analysis.depth_forecast} m
+                </strong>
+
+                <small>
+                  Estimated target depth
+                </small>
+              </div>
+
+              <div className="result-card">
+                <span>
+                  Risk Level
+                </span>
+
+                <strong
+                  className={`risk-value risk-${getRiskClass(
+                    analysis.risk_level
+                  )}`}
+                >
+                  {String(
+                    analysis.risk_level
+                  ).toUpperCase()}
+                </strong>
+
+                <small>
+                  Exploration risk assessment
+                </small>
+              </div>
             </div>
+          </div>
+
+          <div className="recommendation-panel">
+            <div className="recommendation-icon">
+              ⌖
+            </div>
+
+            <div>
+              <div className="dashboard-label">
+                AI EXPLORATION RECOMMENDATION
+              </div>
+
+              <h3>
+                {getProspectivityLevel(
+                  analysis.prospectivity_index
+                ) === "HIGH"
+                  ? "High-priority geothermal exploration area"
+                  : getProspectivityLevel(
+                      analysis.prospectivity_index
+                    ) === "MODERATE"
+                  ? "Moderate-priority exploration area"
+                  : "Low-priority exploration area"}
+              </h3>
+
+              <p>
+                {region} demonstrates a prospectivity index of{" "}
+                <strong>
+                  {analysis.prospectivity_index}
+                </strong>{" "}
+                with an estimated temperature of{" "}
+                <strong>
+                  {analysis.temperature_forecast} °C
+                </strong>{" "}
+                at approximately{" "}
+                <strong>
+                  {analysis.depth_forecast} m
+                </strong>.
+              </p>
+            </div>
+          </div>
+
+          <div className="analysis-disclaimer">
+            <strong>
+              Demo / MVP output:
+            </strong>{" "}
+            This assessment demonstrates the GeoThermAI Explorer
+            analytical workflow. Values shown in the competition
+            MVP are demonstration results and should not be
+            interpreted as confirmed geological exploration
+            targets.
           </div>
         </section>
       )}
 
       <footer className="app-footer">
         <span>GeoThermAI Explorer</span>
-        <span>AI-powered geothermal exploration platform</span>
+        <span>
+          AI-powered geothermal exploration platform
+        </span>
       </footer>
     </main>
   );
