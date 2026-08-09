@@ -114,11 +114,9 @@ function App() {
 
         <header className="landing-header">
           <div className="brand">
-            <img
-            className="brand-logo"
-            src="/logo.png"
-            alt="GeoThermAI Explorer"
-          />
+            <div className="brand-mark">
+              GT
+            </div>
 
             <div>
               <div className="brand-name">
@@ -241,11 +239,9 @@ function App() {
     <main className="app-shell">
       <header className="app-header">
         <div className="brand">
-          <img
-            className="brand-logo"
-            src="/logo.png"
-            alt="GeoThermAI Explorer"
-          />
+          <div className="brand-mark">
+            GT
+          </div>
 
           <div>
             <div className="brand-name">
