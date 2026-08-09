@@ -385,8 +385,7 @@ function App() {
         </div>
       )}
 
-      <div className="analysis-workspace">
-    <section className="map-section">
+      <section className="map-section">
         <div className="section-heading">
           <div>
             <div className="section-label">
@@ -596,7 +595,6 @@ function App() {
         </section>
       )}
 
-      </div>
       <footer className="app-footer">
         <span>GeoThermAI Explorer</span>
         <span>

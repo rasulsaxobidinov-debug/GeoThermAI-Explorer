@@ -155,15 +155,11 @@ function MapFocus({ selectedPoint }) {
   const map = useMap();
 
   useEffect(() => {
-    if (selectedPoint) {
-      map.flyTo(selectedPoint.position, 8, {
-        duration: 1.2,
-      });
-    } else {
-      map.flyTo(uzbekistanCenter, 6, {
-        duration: 1.2,
-      });
-    }
+    if (!selectedPoint) return;
+
+    map.flyTo(selectedPoint.position, 8, {
+      duration: 1.2,
+    });
   }, [map, selectedPoint]);
 
   return null;
@@ -199,7 +195,9 @@ function MapView({ selectedRegion, analysis }) {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 
-        <MapFocus selectedPoint={selectedPoint} />
+        {selectedPoint && (
+          <MapFocus selectedPoint={selectedPoint} />
+        )}
 
         <LayersControl position="topright">
           <Overlay checked name="Geothermal Prospects">
