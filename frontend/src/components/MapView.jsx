@@ -90,6 +90,51 @@ const geothermalPoints = [
     probability: 79,
     prospectivity: 0.82,
   },
+  {
+    name: "Andijan Regional Demo Point",
+    region: "Andijan",
+    position: [40.78, 72.34],
+    temperature: 88,
+    depth: 1900,
+    probability: 75,
+    prospectivity: 0.77,
+  },
+  {
+    name: "Namangan Regional Demo Point",
+    region: "Namangan",
+    position: [41.00, 71.67],
+    temperature: 90,
+    depth: 1950,
+    probability: 77,
+    prospectivity: 0.79,
+  },
+  {
+    name: "Syrdarya Regional Demo Point",
+    region: "Syrdarya",
+    position: [40.49, 68.78],
+    temperature: 82,
+    depth: 2200,
+    probability: 68,
+    prospectivity: 0.69,
+  },
+  {
+    name: "Khorezm Regional Demo Point",
+    region: "Khorezm",
+    position: [41.55, 60.63],
+    temperature: 78,
+    depth: 2300,
+    probability: 64,
+    prospectivity: 0.63,
+  },
+  {
+    name: "Karakalpakstan Regional Demo Point",
+    region: "Karakalpakstan",
+    position: [42.46, 59.62],
+    temperature: 76,
+    depth: 2500,
+    probability: 61,
+    prospectivity: 0.60,
+  },
 ];
 
 const thermalAnomalies = [
@@ -125,7 +170,7 @@ const faultLines = [
 
 function getProspectivityClass(value) {
   if (value >= 0.8) return "high";
-  if (value >= 0.65) return "moderate";
+  if (value >= 0.60) return "moderate";
   return "low";
 }
 
@@ -133,7 +178,7 @@ function createProspectMarker(selected = false, prospectivity = 0) {
   const level =
     prospectivity >= 0.8
       ? "high"
-      : prospectivity >= 0.65
+      : prospectivity >= 0.60
       ? "moderate"
       : "low";
 
