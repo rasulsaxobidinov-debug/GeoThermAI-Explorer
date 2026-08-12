@@ -1,0 +1,51 @@
+/* =========================
+   LANGUAGE SWITCHER
+========================= */
+.language-switcher {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid rgba(15, 61, 92, 0.14);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 4px 14px rgba(15, 61, 92, 0.08);
+}
+
+.language-button {
+  min-width: 36px;
+  height: 30px;
+  padding: 0 9px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #536675;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.language-button:hover {
+  background: #eef4f7;
+  color: #0b3c5d;
+}
+
+.language-button.active {
+  background: #0b3c5d;
+  color: #ffffff;
+  box-shadow: 0 2px 7px rgba(11, 60, 93, 0.22);
+}
+
+@media (max-width: 700px) {
+  .language-switcher {
+    gap: 2px;
+  }
+
+  .language-button {
+    min-width: 32px;
+    padding: 0 7px;
+    font-size: 10px;
+  }
+}

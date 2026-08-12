@@ -170,7 +170,7 @@ const faultLines = [
 
 function getProspectivityClass(value) {
   if (value >= 0.8) return "high";
-  if (value >= 0.60) return "moderate";
+  if (value >= 0.65) return "moderate";
   return "low";
 }
 
@@ -178,7 +178,7 @@ function createProspectMarker(selected = false, prospectivity = 0) {
   const level =
     prospectivity >= 0.8
       ? "high"
-      : prospectivity >= 0.60
+      : prospectivity >= 0.65
       ? "moderate"
       : "low";
 
@@ -214,7 +214,36 @@ function MapFocus({ selectedPoint }) {
   return null;
 }
 
-function MapView({ selectedRegion, analysis }) {
+
+const mapTranslations = {
+  en: {
+    prospects: "Geothermal Prospects", anomalies: "Thermal Anomalies", faults: "Geological Faults", aiResult: "AI Analysis Result",
+    region: "Region", temperature: "Temperature", depth: "Depth", probability: "Probability", prospectivity: "Prospectivity",
+    aiResultShort: "AI analysis result", updatedProbability: "Updated probability", intelligence: "GEOTHERMAL INTELLIGENCE",
+    mapTitle: "Uzbekistan geothermal prospectivity", layers: "MAP LAYERS", indicators: "Spatial exploration indicators",
+    geothermalProspect: "Geothermal prospect", thermalAnomaly: "Thermal anomaly", geologicalFault: "Geological fault",
+    aiProspectivity: "AI Prospectivity", score: "Score", dataStatus: "Data status:", demo: "MVP demonstration dataset", high: "HIGH", moderate: "MODERATE", low: "LOW",
+  },
+  ru: {
+    prospects: "Геотермальные перспективы", anomalies: "Термические аномалии", faults: "Геологические разломы", aiResult: "Результат AI-анализа",
+    region: "Регион", temperature: "Температура", depth: "Глубина", probability: "Вероятность", prospectivity: "Перспективность",
+    aiResultShort: "Результат AI-анализа", updatedProbability: "Обновлённая вероятность", intelligence: "ГЕОТЕРМАЛЬНАЯ АНАЛИТИКА",
+    mapTitle: "Геотермальная перспективность Узбекистана", layers: "СЛОИ КАРТЫ", indicators: "Пространственные показатели разведки",
+    geothermalProspect: "Геотермальная перспектива", thermalAnomaly: "Термическая аномалия", geologicalFault: "Геологический разлом",
+    aiProspectivity: "AI-перспективность", score: "Балльная оценка", dataStatus: "Статус данных:", demo: "демонстрационный набор MVP", high: "ВЫСОКАЯ", moderate: "СРЕДНЯЯ", low: "НИЗКАЯ",
+  },
+  uz: {
+    prospects: "Geotermal istiqbollar", anomalies: "Termik anomaliyalar", faults: "Geologik yoriqlar", aiResult: "AI tahlil natijasi",
+    region: "Hudud", temperature: "Harorat", depth: "Chuqurlik", probability: "Ehtimollik", prospectivity: "Istiqbollilik",
+    aiResultShort: "AI tahlil natijasi", updatedProbability: "Yangilangan ehtimollik", intelligence: "GEOTERMAL ANALITIKA",
+    mapTitle: "O‘zbekiston geotermal istiqbolliligi", layers: "XARITA QATLAMLARI", indicators: "Fazoviy qidiruv ko‘rsatkichlari",
+    geothermalProspect: "Geotermal istiqbol", thermalAnomaly: "Termik anomaliya", geologicalFault: "Geologik yoriq",
+    aiProspectivity: "AI istiqbolliligi", score: "Ball", dataStatus: "Maʼlumotlar holati:", demo: "MVP demo maʼlumotlar to‘plami", high: "YUQORI", moderate: "O‘RTACHA", low: "PAST",
+  },
+};
+function MapView({ selectedRegion, analysis, language = "en" }) {
+  const mt = mapTranslations[language] || mapTranslations.en;
+
   const selectedPoint = geothermalPoints.find(
     (point) => point.region === selectedRegion
   );
@@ -247,7 +276,7 @@ function MapView({ selectedRegion, analysis }) {
         <MapFocus selectedPoint={selectedPoint} />
 
         <LayersControl position="topright">
-          <Overlay checked name="Geothermal Prospects">
+          <Overlay checked name={mt.prospects}>
             <>
               {geothermalPoints.map((point) => {
                 const isSelected =
@@ -267,37 +296,37 @@ function MapView({ selectedRegion, analysis }) {
                         <h3>{point.name}</h3>
 
                         <p>
-                          <strong>Region:</strong>{" "}
+                          <strong>{mt.region}:</strong>{" "}
                           {point.region}
                         </p>
 
                         <p>
-                          <strong>Temperature:</strong>{" "}
+                          <strong>{mt.temperature}:</strong>{" "}
                           {point.temperature} °C
                         </p>
 
                         <p>
-                          <strong>Depth:</strong>{" "}
+                          <strong>{mt.depth}:</strong>{" "}
                           {point.depth} m
                         </p>
 
                         <p>
-                          <strong>Probability:</strong>{" "}
+                          <strong>{mt.probability}:</strong>{" "}
                           {point.probability}%
                         </p>
 
                         <p>
-                          <strong>Prospectivity:</strong>{" "}
+                          <strong>{mt.prospectivity}:</strong>{" "}
                           {point.prospectivity.toFixed(2)}
                         </p>
 
                         {isSelected && analysis && (
                           <div className="popup-ai-result">
                             <strong>
-                              ✓ AI analysis result
+                              ✓ {mt.aiResultShort}
                             </strong>
                             <br />
-                            Updated probability:{" "}
+                            {mt.updatedProbability}:{" "}
                             {Math.round(
                               analysis.geothermal_probability * 100
                             )}
@@ -312,7 +341,7 @@ function MapView({ selectedRegion, analysis }) {
             </>
           </Overlay>
 
-          <Overlay checked name="Thermal Anomalies">
+          <Overlay checked name={mt.anomalies}>
             <>
               {thermalAnomalies.map((position, index) => (
                 <Circle
@@ -330,7 +359,7 @@ function MapView({ selectedRegion, analysis }) {
             </>
           </Overlay>
 
-          <Overlay checked name="Geological Faults">
+          <Overlay checked name={mt.faults}>
             <>
               {faultLines.map((line, index) => (
                 <Polyline
@@ -347,7 +376,7 @@ function MapView({ selectedRegion, analysis }) {
           </Overlay>
 
           {selectedPoint && analysis && (
-            <Overlay checked name="AI Analysis Result">
+            <Overlay checked name={mt.aiResult}>
               <Circle
                 center={selectedPoint.position}
                 radius={60000}
@@ -370,38 +399,38 @@ function MapView({ selectedRegion, analysis }) {
 
       <div className="map-overlay map-title-overlay">
         <span className="map-overlay-kicker">
-          GEOTHERMAL INTELLIGENCE
+          {mt.intelligence}
         </span>
 
         <strong>GeoThermAI Explorer</strong>
 
         <span>
-          Uzbekistan geothermal prospectivity
+          {mt.mapTitle}
         </span>
       </div>
 
       <div className="map-legend">
         <div className="legend-title">
-          MAP LAYERS
+          {mt.layers}
         </div>
 
         <div className="legend-subtitle">
-          Spatial exploration indicators
+          {mt.indicators}
         </div>
 
         <div className="legend-item">
           <span className="legend-marker">△</span>
-          Geothermal prospect
+          {mt.geothermalProspect}
         </div>
 
         <div className="legend-item">
           <span className="legend-anomaly" />
-          Thermal anomaly
+          {mt.thermalAnomaly}
         </div>
 
         <div className="legend-item">
           <span className="legend-fault" />
-          Geological fault
+          {mt.geologicalFault}
         </div>
 
         {analysis && (
@@ -409,21 +438,21 @@ function MapView({ selectedRegion, analysis }) {
             <div className="legend-divider" />
 
             <div className="legend-title">
-              AI Prospectivity
+              {mt.aiProspectivity}
             </div>
 
             <div
               className={`prospectivity-badge ${prospectivityClass}`}
             >
               {prospectivityClass === "high"
-                ? "HIGH"
+                ? mt.high
                 : prospectivityClass === "moderate"
-                ? "MODERATE"
-                : "LOW"}
+                ? mt.moderate
+                : mt.low}
             </div>
 
             <div className="legend-score">
-              Score:{" "}
+              {mt.score}:{" "}
               <strong>
                 {Number(selectedProspectivity).toFixed(2)}
               </strong>
@@ -434,7 +463,7 @@ function MapView({ selectedRegion, analysis }) {
         <div className="legend-divider" />
 
         <div className="legend-disclaimer">
-          <strong>Data status:</strong> MVP demonstration dataset
+          <strong>{mt.dataStatus}</strong> {mt.demo}
         </div>
       </div>
     </div>
